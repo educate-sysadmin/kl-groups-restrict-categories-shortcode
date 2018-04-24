@@ -3,7 +3,7 @@
 Plugin Name: KL Groups Restrict Categories Shortcode
 Plugin URI: https://github.com/educate-sysadmin/kl-groups-restrict-categories-shortcode
 Description: Shortcode access controls for Groups Restrict Categories accesses
-Version: 0.1
+Version: 0.2
 Author: b.cunningham@ucl.ac.uk
 Author URI: https://educate.london
 License: GPL2
@@ -80,7 +80,7 @@ function klgrc_shortcode( $atts, $content = null ) {
 		if ( $show_content ) {
 			remove_shortcode( 'kl_groups_restrict_categories' );
 			$content = do_shortcode( $content );
-			add_shortcode( 'kl_groups_restrict_categories', 'kl_groups_restrict_categories_shortcode' );
+			add_shortcode( 'kl_groups_restrict_categories', 'klgrc_shortcode' );
 			$output = $content;
 		}
 	}
