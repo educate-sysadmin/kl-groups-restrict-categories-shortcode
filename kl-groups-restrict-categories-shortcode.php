@@ -42,6 +42,8 @@ function klgrc_get_groups_restrict_categories($category) {
 
 // thanks groups/lib/access/class-groups-access-shortcodes.php
 function klgrc_shortcode( $atts, $content = null ) {
+    global $klgrc_config;
+
 	$output = '';
 	$class = ' klgrc '; // to populate in case needed for divup
     // parse options
