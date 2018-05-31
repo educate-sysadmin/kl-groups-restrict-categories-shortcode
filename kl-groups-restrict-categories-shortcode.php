@@ -40,6 +40,19 @@ function klgrc_get_groups_restrict_categories($category) {
     );
 }
 
+/* helper: get group name */
+function klgrc_get_group_name($group_id) {
+	global $wpdb;
+	if (class_exists('Groups_User')) {		
+		$sql = 'SELECT name FROM '.$wpdb->prefix .'groups_group WHERE group_id='.$group_id;
+		$row = $wpdb->get_row( $sql );
+		$group_name = $row->name;
+		return $group_name;
+	} else {
+		return "";
+	}		
+}
+
 // thanks groups/lib/access/class-groups-access-shortcodes.php
 function klgrc_shortcode( $atts, $content = null ) {
     global $klgrc_config;
@@ -76,7 +89,7 @@ function klgrc_shortcode( $atts, $content = null ) {
                 foreach ($categories_request as $category) {                    
                     $groups_allowed = klgrc_get_groups_restrict_categories($category);
                     foreach ($groups_allowed as $group_allowed) {
-                        $class .= (int)$group_allowed->meta_value.' '; // populate class
+                        $class .= klgrc_get_group_name((int)$group_allowed->meta_value).' '; // populate class
                     }
                     foreach ($user_groups as $user_group) {
                         foreach ($groups_allowed as $group_allowed) {
