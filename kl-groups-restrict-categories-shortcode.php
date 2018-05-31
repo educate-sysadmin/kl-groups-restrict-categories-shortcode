@@ -3,11 +3,15 @@
 Plugin Name: KL Groups Restrict Categories Shortcode
 Plugin URI: https://github.com/educate-sysadmin/kl-groups-restrict-categories-shortcode
 Description: Shortcode access controls for Groups Restrict Categories accesses
-Version: 0.2
+Version: 0.3
 Author: b.cunningham@ucl.ac.uk
 Author URI: https://educate.london
 License: GPL2
 */
+
+$klgrc_config = array(
+    'divup' => true, // surround content with divs with category and groups classes
+);
 
 /* helper: get current user's group ids */
 function klgrc_get_user_groups(/* for current user */) {
@@ -39,6 +43,7 @@ function klgrc_get_groups_restrict_categories($category) {
 // thanks groups/lib/access/class-groups-access-shortcodes.php
 function klgrc_shortcode( $atts, $content = null ) {
 	$output = '';
+	$class = ' klgrc '; // to populate in case needed for divup
     // parse options
 	$options = shortcode_atts( array( 'categories' => '' ), $atts );
 	$show_content = false;
@@ -53,6 +58,7 @@ function klgrc_shortcode( $atts, $content = null ) {
             $wp_categories = get_categories();
             $valid = false;            
             foreach ($categories_request as $category) {
+                $class .= $category.' '; // populate class
                 foreach ($wp_categories as $wp_category) {
                     if ($wp_category->category_nicename == $category) {
                         $valid = true; 
@@ -66,6 +72,9 @@ function klgrc_shortcode( $atts, $content = null ) {
                 // check each category request against groups allowed for category and user's groups
                 foreach ($categories_request as $category) {                    
                     $groups_allowed = klgrc_get_groups_restrict_categories($category);
+                    foreach ($groups_allowed as $group_allowed) {
+                        $class .= $group_allowed.' '; // populate class
+                    }
                     foreach ($user_groups as $user_group) {
                         foreach ($groups_allowed as $group_allowed) {
                             if ((int)$group_allowed->meta_value == $user_group) {
@@ -81,7 +90,9 @@ function klgrc_shortcode( $atts, $content = null ) {
 			remove_shortcode( 'kl_groups_restrict_categories' );
 			$content = do_shortcode( $content );
 			add_shortcode( 'kl_groups_restrict_categories', 'klgrc_shortcode' );
-			$output = $content;
+            if ($klgrc_config['divup']) { $output .= '<div class = "'.$class.'">'; }
+			$output .= $content;
+            if ($klgrc_config['divup']) { $output .= '</div>'; }
 		}
 	}
 	return $output;
