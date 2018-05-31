@@ -29,7 +29,7 @@ function klgrc_get_user_groups(/* for current user */) {
 /* helper: return group ids restrictions for category */
 function klgrc_get_groups_restrict_categories($category) {
     global $wpdb;
-
+    
     return $wpdb->get_results( 
 	    '
             SELECT meta_value 
@@ -68,6 +68,7 @@ function klgrc_shortcode( $atts, $content = null ) {
                     }
                 }
             }
+
             if ($valid) {
                 // get current user's groups
                 $user_groups = klgrc_get_user_groups();
@@ -75,7 +76,7 @@ function klgrc_shortcode( $atts, $content = null ) {
                 foreach ($categories_request as $category) {                    
                     $groups_allowed = klgrc_get_groups_restrict_categories($category);
                     foreach ($groups_allowed as $group_allowed) {
-                        $class .= $group_allowed.' '; // populate class
+                        $class .= (int)$group_allowed->meta_value.' '; // populate class
                     }
                     foreach ($user_groups as $user_group) {
                         foreach ($groups_allowed as $group_allowed) {
@@ -88,6 +89,7 @@ function klgrc_shortcode( $atts, $content = null ) {
                 }
             }
         }
+
 		if ( $show_content ) {
 			remove_shortcode( 'kl_groups_restrict_categories' );
 			$content = do_shortcode( $content );
